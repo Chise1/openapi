@@ -1,0 +1,39 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"$ref": "#/components/schemas/CustomMapOuter",
+	"components": {
+		"CustomMapOuter": {
+			"type": "object",
+			"required": [
+				"my_map"
+			],
+			"properties": {
+				"my_map": {
+					"$schema": "http://json-schema.org/draft-04/schema#",
+					"$ref": "#/components/schemas/CustomMapType",
+					"title": "MyMap"
+				}
+			},
+			"additionalProperties": false,
+			"title": "CustomMapOuter"
+		},
+		"CustomMapType": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": [
+					"key",
+					"value"
+				],
+				"properties": {
+					"key": {
+						"type": "string"
+					},
+					"value": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	}
+}

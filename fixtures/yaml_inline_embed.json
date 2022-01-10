@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/components/schemas/TestYamlInline",
+  "components": {
+    "TestYamlInline": {
+      "type": "object",
+      "required": [
+        "foo"
+      ],
+      "properties": {
+        "foo": {
+          "type": "string",
+          "title": "Foo"
+        }
+      },
+      "additionalProperties": false,
+      "title": "TestYamlInline"
+    }
+  }
+}

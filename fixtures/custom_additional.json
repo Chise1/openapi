@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/components/schemas/GrandfatherType",
+  "components": {
+    "GrandfatherType": {
+      "type": "object",
+      "required": [
+        "family_name",
+        "ip_addr"
+      ],
+      "properties": {
+        "family_name": {
+          "type": "string",
+          "title": "FamilyName"
+        },
+        "ip_addr": {
+          "type": "string",
+          "title": "IP",
+          "format": "ipv4"
+        }
+      },
+      "additionalProperties": false,
+      "title": "GrandfatherType"
+    }
+  }
+}

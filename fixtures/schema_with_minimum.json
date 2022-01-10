@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/components/schemas/MinValue",
+  "components": {
+    "MinValue": {
+      "type": "object",
+      "required": [
+        "value4"
+      ],
+      "properties": {
+        "value4": {
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "Value",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "title": "MinValue"
+    }
+  }
+}

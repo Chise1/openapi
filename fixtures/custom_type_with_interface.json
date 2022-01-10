@@ -1,0 +1,25 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"$ref": "#/components/schemas/CustomTypeFieldWithInterface",
+	"components": {
+		"CustomTimeWithInterface": {
+			"type": "string",
+			"format": "date-time"
+		},
+		"CustomTypeFieldWithInterface": {
+			"type": "object",
+			"required": [
+				"CreatedAt"
+			],
+			"properties": {
+				"CreatedAt": {
+					"$schema": "http://json-schema.org/draft-04/schema#",
+					"$ref": "#/components/schemas/CustomTimeWithInterface",
+					"title": "CreatedAt"
+				}
+			},
+			"additionalProperties": false,
+			"title": "CustomTypeFieldWithInterface"
+		}
+	}
+}

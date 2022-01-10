@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": [
+    "inner"
+  ],
+  "properties": {
+    "inner": {
+      "type": "object",
+      "required": [
+        "foo"
+      ],
+      "properties": {
+        "foo": {
+          "type": "string",
+          "title": "Foo"
+        }
+      },
+      "additionalProperties": false,
+      "title": "Inner"
+    }
+  },
+  "additionalProperties": false,
+  "components": {
+    "Inner": {
+      "type": "object",
+      "required": [
+        "foo"
+      ],
+      "properties": {
+        "foo": {
+          "type": "string",
+          "title": "Foo"
+        }
+      },
+      "additionalProperties": false,
+      "title": "Inner"
+    }
+  }
+}

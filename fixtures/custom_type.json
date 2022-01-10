@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/components/schemas/CustomTypeField",
+  "components": {
+    "CustomTypeField": {
+      "type": "object",
+      "required": [
+        "CreatedAt"
+      ],
+      "properties": {
+        "CreatedAt": {
+          "type": "string",
+          "title": "CreatedAt",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false,
+      "title": "CustomTypeField"
+    }
+  }
+}

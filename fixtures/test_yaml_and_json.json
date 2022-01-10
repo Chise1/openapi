@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/components/schemas/TestYamlAndJson",
+  "components": {
+    "TestYamlAndJson": {
+      "type": "object",
+      "required": [
+        "FirstName",
+        "LastName",
+        "age"
+      ],
+      "properties": {
+        "FirstName": {
+          "type": "string",
+          "title": "FirstName"
+        },
+        "LastName": {
+          "type": "string",
+          "title": "LastName"
+        },
+        "age": {
+          "type": "integer",
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Age"
+        },
+        "MiddleName": {
+          "type": "string",
+          "title": "MiddleName"
+        }
+      },
+      "additionalProperties": false,
+      "title": "TestYamlAndJson"
+    }
+  }
+}

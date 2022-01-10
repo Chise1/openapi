@@ -1,0 +1,492 @@
+{
+  "type": "object",
+  "required": [
+    "some_base_property",
+    "some_base_property_yaml",
+    "grand",
+    "SomeUntaggedBaseProperty",
+    "PublicNonExported",
+    "id",
+    "name",
+    "TestFlag",
+    "age",
+    "email",
+    "Baz",
+    "color",
+    "roles",
+    "raw"
+  ],
+  "properties": {
+    "some_base_property": {
+      "type": "integer",
+      "maximum": 2147483647,
+      "minimum": -2147483648,
+      "title": "SomeBaseProperty"
+    },
+    "some_base_property_yaml": {
+      "type": "integer",
+      "maximum": 2147483647,
+      "minimum": -2147483648,
+      "title": "SomeBasePropertyYaml"
+    },
+    "grand": {
+      "type": "object",
+      "required": [
+        "family_name"
+      ],
+      "properties": {
+        "family_name": {
+          "type": "string",
+          "title": "FamilyName"
+        }
+      },
+      "additionalProperties": false,
+      "title": "GrandfatherType"
+    },
+    "SomeUntaggedBaseProperty": {
+      "type": "boolean",
+      "title": "SomeUntaggedBaseProperty"
+    },
+    "PublicNonExported": {
+      "type": "integer",
+      "maximum": 2147483647,
+      "minimum": -2147483648,
+      "title": "PublicNonExported"
+    },
+    "id": {
+      "type": "integer",
+      "maximum": 2147483647,
+      "minimum": -2147483648,
+      "title": "ID"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 20,
+      "minLength": 1,
+      "pattern": ".*",
+      "title": "the name",
+      "description": "this is a property",
+      "default": "alex",
+      "examples": [
+        "joe",
+        "lucy"
+      ]
+    },
+    "friends": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "maximum": 2147483647,
+        "minimum": -2147483648
+      },
+      "title": "Friends",
+      "description": "list of IDs, omitted when empty"
+    },
+    "tags": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "additionalProperties": true
+        }
+      },
+      "title": "Tags"
+    },
+    "TestFlag": {
+      "type": "boolean",
+      "title": "TestFlag"
+    },
+    "birth_date": {
+      "type": "string",
+      "title": "Time",
+      "format": "date-time"
+    },
+    "website": {
+      "type": "string",
+      "title": "URL",
+      "format": "uri"
+    },
+    "network_address": {
+      "type": "string",
+      "title": "IP",
+      "format": "ipv4"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo",
+      "media": {
+        "binaryEncoding": "base64"
+      }
+    },
+    "photo2": {
+      "type": "string",
+      "title": "Photo2",
+      "media": {
+        "binaryEncoding": "base64"
+      }
+    },
+    "feeling": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "title": "Feeling"
+    },
+    "age": {
+      "type": "integer",
+      "maximum": 120,
+      "exclusiveMaximum": true,
+      "minimum": 18,
+      "exclusiveMinimum": true,
+      "title": "Age"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email",
+      "format": "email"
+    },
+    "Baz": {
+      "type": "string",
+      "title": "Baz",
+      "foo": [
+        "bar",
+        "bar1"
+      ],
+      "hello": "world"
+    },
+    "color": {
+      "enum": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "type": "string",
+      "title": "Color"
+    },
+    "rank": {
+      "enum": [
+        1,
+        2,
+        3
+      ],
+      "type": "integer",
+      "maximum": 2147483647,
+      "minimum": -2147483648,
+      "title": "Rank"
+    },
+    "mult": {
+      "enum": [
+        1,
+        1.5,
+        2
+      ],
+      "type": "number",
+      "maximum": 1.7976931348623157e+308,
+      "minimum": -1.7976931348623157e+308,
+      "title": "Multiplier"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "admin",
+          "moderator",
+          "user"
+        ],
+        "type": "string"
+      },
+      "title": "Roles"
+    },
+    "priorities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          -1,
+          0,
+          1
+        ],
+        "type": "integer",
+        "maximum": 2147483647,
+        "minimum": -2147483648
+      },
+      "title": "Priorities"
+    },
+    "offsets": {
+      "type": "array",
+      "items": {
+        "enum": [
+          1.570796,
+          3.141592,
+          6.283185
+        ],
+        "type": "number",
+        "maximum": 1.7976931348623157e+308,
+        "minimum": -1.7976931348623157e+308
+      },
+      "title": "Offsets"
+    },
+    "raw": {
+      "additionalProperties": true,
+      "title": "Raw"
+    }
+  },
+  "additionalProperties": false,
+  "title": "TestUser",
+  "components": {
+    "GrandfatherType": {
+      "type": "object",
+      "required": [
+        "family_name"
+      ],
+      "properties": {
+        "family_name": {
+          "type": "string",
+          "title": "FamilyName"
+        }
+      },
+      "additionalProperties": false,
+      "title": "GrandfatherType"
+    },
+    "TestUser": {
+      "type": "object",
+      "required": [
+        "some_base_property",
+        "some_base_property_yaml",
+        "grand",
+        "SomeUntaggedBaseProperty",
+        "PublicNonExported",
+        "id",
+        "name",
+        "TestFlag",
+        "age",
+        "email",
+        "Baz",
+        "color",
+        "roles",
+        "raw"
+      ],
+      "properties": {
+        "some_base_property": {
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "SomeBaseProperty"
+        },
+        "some_base_property_yaml": {
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "SomeBasePropertyYaml"
+        },
+        "grand": {
+          "type": "object",
+          "required": [
+            "family_name"
+          ],
+          "properties": {
+            "family_name": {
+              "type": "string",
+              "title": "FamilyName"
+            }
+          },
+          "additionalProperties": false,
+          "title": "GrandfatherType"
+        },
+        "SomeUntaggedBaseProperty": {
+          "type": "boolean",
+          "title": "SomeUntaggedBaseProperty"
+        },
+        "PublicNonExported": {
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "PublicNonExported"
+        },
+        "id": {
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "ID"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1,
+          "pattern": ".*",
+          "title": "the name",
+          "description": "this is a property",
+          "default": "alex",
+          "examples": [
+            "joe",
+            "lucy"
+          ]
+        },
+        "friends": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": -2147483648
+          },
+          "title": "Friends",
+          "description": "list of IDs, omitted when empty"
+        },
+        "tags": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "additionalProperties": true
+            }
+          },
+          "title": "Tags"
+        },
+        "TestFlag": {
+          "type": "boolean",
+          "title": "TestFlag"
+        },
+        "birth_date": {
+          "type": "string",
+          "title": "Time",
+          "format": "date-time"
+        },
+        "website": {
+          "type": "string",
+          "title": "URL",
+          "format": "uri"
+        },
+        "network_address": {
+          "type": "string",
+          "title": "IP",
+          "format": "ipv4"
+        },
+        "photo": {
+          "type": "string",
+          "title": "Photo",
+          "media": {
+            "binaryEncoding": "base64"
+          }
+        },
+        "photo2": {
+          "type": "string",
+          "title": "Photo2",
+          "media": {
+            "binaryEncoding": "base64"
+          }
+        },
+        "feeling": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Feeling"
+        },
+        "age": {
+          "type": "integer",
+          "maximum": 120,
+          "exclusiveMaximum": true,
+          "minimum": 18,
+          "exclusiveMinimum": true,
+          "title": "Age"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email",
+          "format": "email"
+        },
+        "Baz": {
+          "type": "string",
+          "title": "Baz",
+          "foo": [
+            "bar",
+            "bar1"
+          ],
+          "hello": "world"
+        },
+        "color": {
+          "enum": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "type": "string",
+          "title": "Color"
+        },
+        "rank": {
+          "enum": [
+            1,
+            2,
+            3
+          ],
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "Rank"
+        },
+        "mult": {
+          "enum": [
+            1,
+            1.5,
+            2
+          ],
+          "type": "number",
+          "maximum": 1.7976931348623157e+308,
+          "minimum": -1.7976931348623157e+308,
+          "title": "Multiplier"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "admin",
+              "moderator",
+              "user"
+            ],
+            "type": "string"
+          },
+          "title": "Roles"
+        },
+        "priorities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              -1,
+              0,
+              1
+            ],
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": -2147483648
+          },
+          "title": "Priorities"
+        },
+        "offsets": {
+          "type": "array",
+          "items": {
+            "enum": [
+              1.570796,
+              3.141592,
+              6.283185
+            ],
+            "type": "number",
+            "maximum": 1.7976931348623157e+308,
+            "minimum": -1.7976931348623157e+308
+          },
+          "title": "Offsets"
+        },
+        "raw": {
+          "additionalProperties": true,
+          "title": "Raw"
+        }
+      },
+      "additionalProperties": false,
+      "title": "TestUser"
+    }
+  }
+}

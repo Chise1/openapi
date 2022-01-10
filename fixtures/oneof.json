@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/components/schemas/RootOneOf",
+  "components": {
+    "ChildOneOf": {
+      "type": "object",
+      "properties": {
+        "child1": {
+          "type": "string",
+          "title": "Child1"
+        },
+        "child2": {
+          "type": "string",
+          "title": "Child2"
+        },
+        "child3": {
+          "additionalProperties": true,
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array"
+            }
+          ],
+          "title": "Child3"
+        },
+        "child4": {
+          "type": "string",
+          "title": "Child4"
+        }
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "child1",
+            "child4"
+          ],
+          "title": "group1"
+        },
+        {
+          "required": [
+            "child2",
+            "child3"
+          ],
+          "title": "group2"
+        }
+      ],
+      "title": "ChildOneOf"
+    },
+    "RootOneOf": {
+      "type": "object",
+      "properties": {
+        "field1": {
+          "type": "string",
+          "title": "Field1"
+        },
+        "field2": {
+          "type": "string",
+          "title": "Field2"
+        },
+        "field3": {
+          "additionalProperties": true,
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array"
+            }
+          ],
+          "title": "Field3"
+        },
+        "field4": {
+          "type": "string",
+          "title": "Field4"
+        },
+        "child": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/components/schemas/ChildOneOf",
+          "title": "Field5"
+        }
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "field1",
+            "field4"
+          ],
+          "title": "group1"
+        },
+        {
+          "required": [
+            "field2"
+          ],
+          "title": "group2"
+        }
+      ],
+      "title": "RootOneOf"
+    }
+  }
+}

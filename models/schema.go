@@ -3,6 +3,9 @@ package models
 import (
 	"encoding/json"
 	"github.com/iancoleman/orderedmap"
+	"reflect"
+	"strconv"
+	"strings"
 )
 
 type Discriminator struct {
@@ -75,6 +78,252 @@ type Schema struct {
 	Extras map[string]interface{} `json:"-"`
 	// 额外增加的字段,主要解决decode和encode共用一个结构体的时候字段问题
 	Nullable   bool   `json:"nullable,omitempty"`
+	ReadOnly   bool   `json:"readOnly,omitempty"`
+	WriteOnly  bool   `json:"writeOnly,omitempty"`  //重用的时候只写，
 	Deprecated bool   `json:"deprecated,omitempty"` //是否为废弃状态
 	FieldName  string `json:"-"`                    //字段名称
+}
+
+func (t *Schema) MarshalJSON() ([]byte, error) {
+	type Type_ Schema
+	b, err := json.Marshal((*Type_)(t))
+	if err != nil {
+		return nil, err
+	}
+	if t.Extras == nil || len(t.Extras) == 0 {
+		return b, nil
+	}
+	m, err := json.Marshal(t.Extras)
+	if err != nil {
+		return nil, err
+	}
+	if len(b) == 2 {
+		return m, nil
+	} else {
+		b[len(b)-1] = ','
+		return append(b, m[1:]...), nil
+	}
+}
+
+// StructKeywordsFromTags 解析结构体字段的tag
+func (t *Schema) StructKeywordsFromTags(f reflect.StructField, parentType *Schema, propertyName string) {
+	t.Description = f.Tag.Get("jsonschema_description")
+	tags := strings.Split(f.Tag.Get("jsonschema"), ",")
+	t.genericKeywords(tags, parentType, propertyName)
+	//default title
+	if t.Title == "" {
+		t.Title = f.Name
+	}
+	t.FieldName = f.Name
+	switch t.Type {
+	case "string":
+		t.stringKeywords(tags)
+	case "number":
+		t.numbericKeywords(tags)
+	case "integer":
+		t.numbericKeywords(tags)
+	case "array":
+		t.arrayKeywords(tags)
+	}
+	extras := strings.Split(f.Tag.Get("jsonschema_extras"), ",")
+	t.extraKeywords(extras)
+}
+
+// read struct tags for generic keyworks
+func (t *Schema) genericKeywords(tags []string, parentType *Schema, propertyName string) {
+	for _, tag := range tags {
+		nameValue := strings.Split(tag, "=")
+		if len(nameValue) == 2 {
+			name, val := nameValue[0], nameValue[1]
+			switch name {
+			case "title":
+				t.Title = val
+			case "description":
+				t.Description = val
+			case "type":
+				t.Type = val
+			case "oneof_required":
+				var typeFound *Schema
+				for i := range parentType.OneOf {
+					if parentType.OneOf[i].Title == nameValue[1] {
+						typeFound = parentType.OneOf[i]
+					}
+				}
+				if typeFound == nil {
+					typeFound = &Schema{
+						Title:    nameValue[1],
+						Required: []string{},
+					}
+					parentType.OneOf = append(parentType.OneOf, typeFound)
+				}
+				typeFound.Required = append(typeFound.Required, propertyName)
+			case "oneof_type":
+				if t.OneOf == nil {
+					t.OneOf = make([]*Schema, 0, 1)
+				}
+				t.Type = ""
+				types := strings.Split(nameValue[1], ";")
+				for _, ty := range types {
+					t.OneOf = append(t.OneOf, &Schema{
+						Type: ty,
+					})
+				}
+			case "enum":
+				switch t.Type {
+				case "string":
+					t.Enum = append(t.Enum, val)
+				case "integer":
+					i, _ := strconv.Atoi(val)
+					t.Enum = append(t.Enum, i)
+				case "number":
+					f, _ := strconv.ParseFloat(val, 64)
+					t.Enum = append(t.Enum, f)
+				}
+			}
+		}
+	}
+}
+
+// read struct tags for string type keyworks
+func (t *Schema) stringKeywords(tags []string) {
+	for _, tag := range tags {
+		nameValue := strings.Split(tag, "=")
+		if len(nameValue) == 2 {
+			name, val := nameValue[0], nameValue[1]
+			switch name {
+			case "minLength":
+				i, _ := strconv.Atoi(val)
+				t.MinLength = i
+			case "maxLength":
+				i, _ := strconv.Atoi(val)
+				t.MaxLength = i
+			case "pattern":
+				t.Pattern = val
+			case "format":
+				switch val {
+				case "date-time", "email", "hostname", "ipv4", "ipv6", "uri":
+					t.Format = val
+					break
+				}
+			case "default":
+				t.Default = val
+			case "example":
+				t.Examples = append(t.Examples, val)
+			}
+		}
+	}
+}
+
+// read struct tags for numberic type keyworks
+func (t *Schema) numbericKeywords(tags []string) {
+	for _, tag := range tags {
+		nameValue := strings.Split(tag, "=")
+		if len(nameValue) == 2 {
+			name, val := nameValue[0], nameValue[1]
+			switch name {
+			case "multipleOf":
+				i, _ := strconv.ParseFloat(val, 32)
+				t.MultipleOf = i
+			case "minimum":
+				i, _ := strconv.ParseFloat(val, 32)
+				t.Minimum = &i
+			case "maximum":
+				i, _ := strconv.ParseFloat(val, 32)
+				t.Maximum = &i
+			case "exclusiveMaximum":
+				b, _ := strconv.ParseBool(val)
+				t.ExclusiveMaximum = b
+			case "exclusiveMinimum":
+				b, _ := strconv.ParseBool(val)
+				t.ExclusiveMinimum = b
+			case "default":
+				i, _ := strconv.Atoi(val)
+				t.Default = i
+			case "example":
+				if i, err := strconv.Atoi(val); err == nil {
+					t.Examples = append(t.Examples, i)
+				}
+			}
+		}
+	}
+}
+
+// read struct tags for object type keyworks
+// func (t *Schema) objectKeywords(tags []string) {
+//     for _, tag := range tags{
+//         nameValue := strings.Split(tag, "=")
+//         name, val := nameValue[0], nameValue[1]
+//         switch name{
+//             case "dependencies":
+//                 t.Dependencies = val
+//                 break;
+//             case "patternProperties":
+//                 t.PatternProperties = val
+//                 break;
+//         }
+//     }
+// }
+
+// read struct tags for array type keyworks
+func (t *Schema) arrayKeywords(tags []string) {
+	var defaultValues []interface{}
+	for _, tag := range tags {
+		nameValue := strings.Split(tag, "=")
+		if len(nameValue) == 2 {
+			name, val := nameValue[0], nameValue[1]
+			switch name {
+			case "minItems":
+				i, _ := strconv.ParseUint(val, 10, 32)
+				t.MinItems = i
+			case "maxItems":
+				i, _ := strconv.ParseUint(val, 10, 32)
+				t.MaxItems = i
+			case "uniqueItems":
+				t.UniqueItems = true
+			case "default":
+				defaultValues = append(defaultValues, val)
+			case "enum":
+				switch t.Items.Type {
+				case "string":
+					t.Items.Enum = append(t.Items.Enum, val)
+				case "integer":
+					i, _ := strconv.Atoi(val)
+					t.Items.Enum = append(t.Items.Enum, i)
+				case "number":
+					f, _ := strconv.ParseFloat(val, 64)
+					t.Items.Enum = append(t.Items.Enum, f)
+				}
+			}
+		}
+	}
+	if len(defaultValues) > 0 {
+		t.Default = defaultValues
+	}
+}
+
+func (t *Schema) extraKeywords(tags []string) {
+	for _, tag := range tags {
+		nameValue := strings.Split(tag, "=")
+		if len(nameValue) == 2 {
+			t.setExtra(nameValue[0], nameValue[1])
+		}
+	}
+}
+
+func (t *Schema) setExtra(key, val string) {
+	if t.Extras == nil {
+		t.Extras = map[string]interface{}{}
+	}
+	if existingVal, ok := t.Extras[key]; ok {
+		switch existingVal := existingVal.(type) {
+		case string:
+			t.Extras[key] = []string{existingVal, val}
+		case []string:
+			t.Extras[key] = append(existingVal, val)
+		case int:
+			t.Extras[key], _ = strconv.Atoi(val)
+		}
+	} else {
+		t.Extras[key] = val
+	}
 }
