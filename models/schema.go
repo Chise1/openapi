@@ -107,8 +107,8 @@ func (t *Schema) MarshalJSON() ([]byte, error) {
 
 // StructKeywordsFromTags 解析结构体字段的tag
 func (t *Schema) StructKeywordsFromTags(f reflect.StructField, parentType *Schema, propertyName string) {
-	t.Description = f.Tag.Get("jsonschema_description")
-	tags := strings.Split(f.Tag.Get("jsonschema"), ",")
+	t.Description = f.Tag.Get(Description)
+	tags := strings.Split(f.Tag.Get(TagName), ",")
 	t.genericKeywords(tags, parentType, propertyName)
 	//default title
 	if t.Title == "" {
@@ -125,7 +125,7 @@ func (t *Schema) StructKeywordsFromTags(f reflect.StructField, parentType *Schem
 	case "array":
 		t.arrayKeywords(tags)
 	}
-	extras := strings.Split(f.Tag.Get("jsonschema_extras"), ",")
+	extras := strings.Split(f.Tag.Get(Extras), ",")
 	t.extraKeywords(extras)
 }
 
@@ -138,7 +138,7 @@ func (t *Schema) genericKeywords(tags []string, parentType *Schema, propertyName
 			switch name {
 			case "title":
 				t.Title = val
-			case "description":
+			case "desc":
 				t.Description = val
 			case "type":
 				t.Type = val
@@ -180,7 +180,25 @@ func (t *Schema) genericKeywords(tags []string, parentType *Schema, propertyName
 					t.Enum = append(t.Enum, f)
 				}
 			}
+		} else if len(nameValue) == 1 {
+			if strings.Contains(tag, "|") {
+				vales := strings.Split(tag, "|")
+				for _, val := range vales {
+					switch t.Items.Type {
+					case "string":
+						t.Items.Enum = append(t.Items.Enum, val)
+					case "integer":
+						i, _ := strconv.Atoi(val)
+						t.Items.Enum = append(t.Items.Enum, i)
+					case "number":
+						f, _ := strconv.ParseFloat(val, 64)
+						t.Items.Enum = append(t.Items.Enum, f)
+					}
+				}
+			}
+
 		}
+
 	}
 }
 
@@ -191,10 +209,14 @@ func (t *Schema) stringKeywords(tags []string) {
 		if len(nameValue) == 2 {
 			name, val := nameValue[0], nameValue[1]
 			switch name {
-			case "minLength":
+			case "len":
 				i, _ := strconv.Atoi(val)
 				t.MinLength = i
-			case "maxLength":
+				t.MaxLength = i
+			case "minLen":
+				i, _ := strconv.Atoi(val)
+				t.MinLength = i
+			case "maxLen":
 				i, _ := strconv.Atoi(val)
 				t.MaxLength = i
 			case "pattern":
@@ -221,21 +243,25 @@ func (t *Schema) numbericKeywords(tags []string) {
 		if len(nameValue) == 2 {
 			name, val := nameValue[0], nameValue[1]
 			switch name {
-			case "multipleOf":
+			case "multi":
 				i, _ := strconv.ParseFloat(val, 32)
 				t.MultipleOf = i
-			case "minimum":
+			case "gte":
 				i, _ := strconv.ParseFloat(val, 32)
 				t.Minimum = &i
-			case "maximum":
+			case "gt":
+				i, _ := strconv.ParseFloat(val, 32)
+				t.Minimum = &i
+				t.ExclusiveMinimum = true
+			case "lte":
 				i, _ := strconv.ParseFloat(val, 32)
 				t.Maximum = &i
-			case "exclusiveMaximum":
-				b, _ := strconv.ParseBool(val)
-				t.ExclusiveMaximum = b
-			case "exclusiveMinimum":
-				b, _ := strconv.ParseBool(val)
-				t.ExclusiveMinimum = b
+			case "lt":
+				i, _ := strconv.ParseFloat(val, 32)
+				t.Maximum = &i
+				t.ExclusiveMaximum = true
+			//case "eq": //todo 没啥用
+			//case "ne":
 			case "default":
 				i, _ := strconv.Atoi(val)
 				t.Default = i
@@ -272,13 +298,17 @@ func (t *Schema) arrayKeywords(tags []string) {
 		if len(nameValue) == 2 {
 			name, val := nameValue[0], nameValue[1]
 			switch name {
-			case "minItems":
+			case "minLen":
 				i, _ := strconv.ParseUint(val, 10, 32)
 				t.MinItems = i
-			case "maxItems":
+			case "maxLen":
 				i, _ := strconv.ParseUint(val, 10, 32)
 				t.MaxItems = i
-			case "uniqueItems":
+			case "len":
+				i, _ := strconv.ParseUint(val, 10, 32)
+				t.MinItems = i
+				t.MaxItems = i
+			case "unique":
 				t.UniqueItems = true
 			case "default":
 				defaultValues = append(defaultValues, val)
@@ -292,6 +322,22 @@ func (t *Schema) arrayKeywords(tags []string) {
 				case "number":
 					f, _ := strconv.ParseFloat(val, 64)
 					t.Items.Enum = append(t.Items.Enum, f)
+				}
+			}
+		} else if len(nameValue) == 1 {
+			if strings.Contains(tag, "|") {
+				vales := strings.Split(tag, "|")
+				for _, val := range vales {
+					switch t.Items.Type {
+					case "string":
+						t.Items.Enum = append(t.Items.Enum, val)
+					case "integer":
+						i, _ := strconv.Atoi(val)
+						t.Items.Enum = append(t.Items.Enum, i)
+					case "number":
+						f, _ := strconv.ParseFloat(val, 64)
+						t.Items.Enum = append(t.Items.Enum, f)
+					}
 				}
 			}
 		}

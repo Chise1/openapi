@@ -25,8 +25,6 @@ import (
 // RFC draft-wright-json-schema-00, section 6
 var Version = "http://json-schema.org/draft-04/schema#"
 
-const TagName = "jsonschema"
-
 // SchemaChild is the root schema.
 // RFC draft-wright-json-schema-00, section 4.5
 type SchemaChild struct {
@@ -520,7 +518,7 @@ func (n *Reflector) reflectFieldName(f reflect.StructField) (string, bool, bool,
 		return "", false, false, false
 	}
 
-	jsonSchemaTags := strings.Split(f.Tag.Get(TagName), ",")
+	jsonSchemaTags := strings.Split(f.Tag.Get(models.TagName), ",")
 	if ignoredByJSONSchemaTags(jsonSchemaTags) {
 		return "", false, false, false
 	}

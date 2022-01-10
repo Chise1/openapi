@@ -16,21 +16,21 @@ import (
 )
 
 type GrandfatherType struct {
-	FamilyName string `json:"family_name" jsonschema:"required"`
+	FamilyName string `json:"family_name" openapi:"required"`
 }
 
 type SomeBaseType struct {
 	SomeBaseProperty     int `json:"some_base_property"`
 	SomeBasePropertyYaml int `yaml:"some_base_property_yaml"`
-	// The jsonschema required tag is nonsensical for private and ignored properties.
+	// The openapi required tag is nonsensical for private and ignored properties.
 	// Their presence here tests that the fields *will not* be required in the output
 	// schema, even if they are tagged required.
-	somePrivateBaseProperty   string          `jsonschema:"required"`
-	SomeIgnoredBaseProperty   string          `json:"-" jsonschema:"required"`
-	SomeSchemaIgnoredProperty string          `jsonschema:"-,required"`
+	somePrivateBaseProperty   string          `openapi:"required"`
+	SomeIgnoredBaseProperty   string          `json:"-" openapi:"required"`
+	SomeSchemaIgnoredProperty string          `openapi:"-,required"`
 	Grandfather               GrandfatherType `json:"grand"`
 
-	SomeUntaggedBaseProperty           bool `jsonschema:"required"`
+	SomeUntaggedBaseProperty           bool `openapi:"required"`
 	someUnexportedUntaggedBaseProperty bool
 }
 
@@ -55,9 +55,9 @@ type TestUser struct {
 	nonExported
 	MapType
 
-	ID      int                    `json:"id" jsonschema:"required"`
-	Name    string                 `json:"name" jsonschema:"required,minLength=1,maxLength=20,pattern=.*,description=this is a property,title=the name,example=joe,example=lucy,default=alex"`
-	Friends []int                  `json:"friends,omitempty" jsonschema_description:"list of IDs, omitted when empty"`
+	ID      int                    `json:"id" openapi:"required"`
+	Name    string                 `json:"name" openapi:"required,minLen=1,maxLen=20,pattern=.*,desc=this is a property,title=the name,example=joe,example=lucy,default=alex"`
+	Friends []int                  `json:"friends,omitempty" openapi_desc:"list of IDs, omitted when empty"`
 	Tags    map[string]interface{} `json:"tags,omitempty"`
 
 	TestFlag       bool
@@ -69,26 +69,26 @@ type TestUser struct {
 	IPAddress net.IP    `json:"network_address,omitempty"`
 
 	// Tests for RFC draft-wright-json-schema-hyperschema-00, section 4
-	Photo  []byte `json:"photo,omitempty" jsonschema:"required"`
-	Photo2 Bytes  `json:"photo2,omitempty" jsonschema:"required"`
+	Photo  []byte `json:"photo,omitempty" openapi:"required"`
+	Photo2 Bytes  `json:"photo2,omitempty" openapi:"required"`
 
 	// Tests for jsonpb enum support
 	Feeling ProtoEnum `json:"feeling,omitempty"`
-	Age     int       `json:"age" jsonschema:"minimum=18,maximum=120,exclusiveMaximum=true,exclusiveMinimum=true"`
-	Email   string    `json:"email" jsonschema:"format=email"`
+	Age     int       `json:"age" openapi:"gt=18,lt=120"`
+	Email   string    `json:"email" openapi:"format=email"`
 
 	// Test for "extras" support
-	Baz string `jsonschema_extras:"foo=bar,hello=world,foo=bar1"`
+	Baz string `openapi_extras:"foo=bar,hello=world,foo=bar1"`
 
 	// Tests for simple enum Tags
-	Color      string  `json:"color" jsonschema:"enum=red,enum=green,enum=blue"`
-	Rank       int     `json:"rank,omitempty" jsonschema:"enum=1,enum=2,enum=3"`
-	Multiplier float64 `json:"mult,omitempty" jsonschema:"enum=1.0,enum=1.5,enum=2.0"`
+	Color      string  `json:"color" openapi:"enum=red,enum=green,enum=blue"`
+	Rank       int     `json:"rank,omitempty" openapi:"enum=1,enum=2,enum=3"`
+	Multiplier float64 `json:"mult,omitempty" openapi:"enum=1.0,enum=1.5,enum=2.0"`
 
 	// Tests for enum Tags on slices
-	Roles      []string  `json:"roles" jsonschema:"enum=admin,enum=moderator,enum=user"`
-	Priorities []int     `json:"priorities,omitempty" jsonschema:"enum=-1,enum=0,enum=1,enun=2"`
-	Offsets    []float64 `json:"offsets,omitempty" jsonschema:"enum=1.570796,enum=3.141592,enum=6.283185"`
+	Roles      []string  `json:"roles" openapi:"enum=admin,enum=moderator,enum=user"`
+	Priorities []int     `json:"priorities,omitempty" openapi:"enum=-1,enum=0,enum=1,enun=2"`
+	Offsets    []float64 `json:"offsets,omitempty" openapi:"enum=1.570796,enum=3.141592,enum=6.283185"`
 
 	// Test for raw JSON
 	Raw json.RawMessage `json:"raw"`
@@ -114,18 +114,18 @@ func (CustomTimeWithInterface) JSONSchemaType() *models.Schema {
 }
 
 type RootOneOf struct {
-	Field1 string      `json:"field1" jsonschema:"oneof_required=group1"`
-	Field2 string      `json:"field2" jsonschema:"oneof_required=group2"`
-	Field3 interface{} `json:"field3" jsonschema:"oneof_type=string;array"`
-	Field4 string      `json:"field4" jsonschema:"oneof_required=group1"`
+	Field1 string      `json:"field1" openapi:"oneof_required=group1"`
+	Field2 string      `json:"field2" openapi:"oneof_required=group2"`
+	Field3 interface{} `json:"field3" openapi:"oneof_type=string;array"`
+	Field4 string      `json:"field4" openapi:"oneof_required=group1"`
 	Field5 ChildOneOf  `json:"child"`
 }
 
 type ChildOneOf struct {
-	Child1 string      `json:"child1" jsonschema:"oneof_required=group1"`
-	Child2 string      `json:"child2" jsonschema:"oneof_required=group2"`
-	Child3 interface{} `json:"child3" jsonschema:"oneof_required=group2,oneof_type=string;array"`
-	Child4 string      `json:"child4" jsonschema:"oneof_required=group1"`
+	Child1 string      `json:"child1" openapi:"oneof_required=group1"`
+	Child2 string      `json:"child2" openapi:"oneof_required=group2"`
+	Child3 interface{} `json:"child3" openapi:"oneof_required=group2,oneof_type=string;array"`
+	Child4 string      `json:"child4" openapi:"oneof_required=group1"`
 }
 
 type Outer struct {
@@ -139,7 +139,7 @@ type Inner struct {
 type Bytes []byte
 
 type TestNullable struct {
-	Child1 string `json:"child1" jsonschema:"nullable"`
+	Child1 string `json:"child1" openapi:"nullable"`
 }
 
 type TestYamlInline struct {
