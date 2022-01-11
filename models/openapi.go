@@ -1,5 +1,7 @@
 package models
 
+import "strings"
+
 type OpenAPI struct {
 	Openapi      string                       `json:"openapi,omitempty"`      //REQUIRED. This string MUST be the version number of the OpenAPI Specification that the OpenAPI document uses. The openapi field SHOULD be used by tooling to interpret the OpenAPI document. This is not related to the API info.version string.
 	Info         *Info                        `json:"info,omitempty"`         //REQUIRED. Provides metadata about the API. The metadata MAY be used by tooling as required.
@@ -11,4 +13,9 @@ type OpenAPI struct {
 	ExternalDocs *ExternalDocumentation       `json:"externalDocs,omitempty"` //Additional external documentation.
 	//JsonSchemaDialect string                      `json:"jsonSchemaDialect"` //The default value for the $schema keyword within Schema Objects contained within this OAS document. This MUST be in the form of a URI.
 	//Webhooks          map[string]interface{}      `json:"webhooks"`          //Map[string, Path Item Object | Reference Object] ]	The incoming webhooks that MAY be received as part of this API and that the API consumer MAY choose to implement. Closely related to the callbacks feature, this section describes requests initiated other than by an API call, for example by an out of band registration. The key name is a unique string to refer to each webhook, while the (optionally referenced) Path Item Object describes a request that may be initiated by the API provider and the expected responses. An example is available.
+}
+
+func (n *OpenAPI) GetSchema(ref string) *Schema {
+	refL := strings.Split(ref, "/")
+	return n.Components.Schemas[refL[len(refL)-1]]
 }

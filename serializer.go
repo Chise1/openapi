@@ -15,6 +15,8 @@ type RouterHelper struct {
 	Components Definitions         //Body,包含content forms,files
 	Parameters Parameters          //path,query,header,cookie, todo path之后在处理
 	Response   map[string]*models.Response
+	*models.Schema
+	ReqContentType string
 }
 
 func NewOpenapiRequest(v RouteStruct) *RouterHelper {
@@ -37,6 +39,12 @@ func NewOpenapiRequest(v RouteStruct) *RouterHelper {
 	n.Response = map[string]*models.Response{}
 	n.WriteRes(v.GetResBody())
 	return n
+}
+func (n *RouterHelper) GetSchema() *models.Schema {
+	if n.Schema.Ref != "" {
+		return n.GetSchemaStruct(n.Schema)
+	}
+	return n.Schema
 }
 func (n *RouterHelper) WriteRes(exceptRes map[int]interface{}) {
 	if exceptRes == nil {
@@ -68,12 +76,20 @@ func (n *RouterHelper) WriteRes(exceptRes map[int]interface{}) {
 	}
 }
 func (n *RouterHelper) reqBody(reflector *Reflector, v interface{}, reqType ContentType) {
+	body := n.body(reflector, v, reqType)
+	for k, v := range body {
+		n.ReqContentType = k
+		n.Schema = v.Schema
+	}
 	n.Body = &models.RequestBody{
-		Content: n.body(reflector, v, reqType),
+		Content: body,
 	}
 }
 
 func (n *RouterHelper) updateComponents(components map[string]*models.Schema) {
+	if n.Components == nil {
+		n.Components = map[string]*models.Schema{}
+	}
 	for name, schema := range components {
 		n.Components[name] = schema
 	}
@@ -83,7 +99,7 @@ func (n *RouterHelper) body(reflector *Reflector, v interface{}, reqType Content
 	vType := reflect.TypeOf(v)
 	schema := reflector.reflectTypeToSchema(components, vType)
 	n.updateComponents(components)
-	rootSchema := n.getSchemaStruct(schema)
+	rootSchema := n.GetSchemaStruct(schema)
 	return map[string]*models.MediaType{
 		string(reqType): {
 			Schema: schema,
@@ -140,7 +156,7 @@ func (n *RouterHelper) para(reflector *Reflector, v interface{}) {
 	}
 }
 
-func (n *RouterHelper) getSchemaStruct(schema *models.Schema) *models.Schema {
+func (n *RouterHelper) GetSchemaStruct(schema *models.Schema) *models.Schema {
 	schemaPath := strings.Split(schema.Ref, "/")
 	s, ok := n.Components[schemaPath[len(schemaPath)-1]]
 	if !ok {

@@ -38,6 +38,7 @@ type RequestBody struct {
 	Required    bool                  `json:"required,omitempty"`    //Determines if the request body is required in the request. Defaults to false.
 	Ref         string                `json:"$ref,omitempty"`
 }
+
 type Link struct {
 	OperationRef string                `json:"operationRef,omitempty"`
 	OperationId  string                `json:"operationId,omitempty"`
