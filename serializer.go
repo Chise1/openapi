@@ -21,17 +21,27 @@ func NewOpenapiRequest(v RouteStruct) *RouterHelper {
 	r := &Reflector{}
 	n := &RouterHelper{}
 	reqBody := v.GetReqBody()
-	body, ok := reqBody.(IContentType)
-	if ok {
-		n.reqBody(r, body, body.GetContentType())
-	} else {
-		n.reqBody(r, reqBody, Json)
+	if reqBody != nil {
+		body, ok := reqBody.(IContentType)
+		if ok {
+			n.reqBody(r, body, body.GetContentType())
+		} else {
+			n.reqBody(r, reqBody, Json)
+		}
 	}
+	reqpara := v.GetReqPara()
+	if reqpara != nil {
+		n.para(r, v.GetReqPara())
+	}
+
 	n.Response = map[string]*models.Response{}
 	n.WriteRes(v.GetResBody())
 	return n
 }
 func (n *RouterHelper) WriteRes(exceptRes map[int]interface{}) {
+	if exceptRes == nil {
+		return
+	}
 	for status, res := range exceptRes {
 		if res == nil {
 			continue
