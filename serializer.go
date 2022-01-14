@@ -66,10 +66,8 @@ func (n *RouterHelper) WriteRes(exceptRes map[int]interface{}) {
 		n.Response[strconv.Itoa(status)] = &models.Response{
 			Content: map[string]*models.MediaType{
 				t: {
-					Schema: exceptSchema.Schema,
-					Example: &models.Example{
-						Value: res,
-					},
+					Schema:  exceptSchema.Schema,
+					Example: res,
 				},
 			},
 		}
@@ -102,10 +100,8 @@ func (n *RouterHelper) body(reflector *Reflector, v interface{}, reqType Content
 	rootSchema := n.GetSchemaStruct(schema)
 	return map[string]*models.MediaType{
 		string(reqType): {
-			Schema: schema,
-			Example: &models.Example{
-				Value: GetExample(rootSchema, v),
-			},
+			Schema:  schema,
+			Example: GetExample(rootSchema, v),
 		},
 	}
 }

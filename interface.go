@@ -22,6 +22,9 @@ type RouteStruct interface {
 	GetReqBody() interface{}         //interface可以为IContentType
 	GetResBody() map[int]interface{} //interface可以为IContentType
 	GetResPara() interface{}
+	GetDescription() string
+	GetPath() string
+	GetMethod() string
 }
 
 // IBody body返回的数据结构
